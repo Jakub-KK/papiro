@@ -209,10 +209,11 @@ elif [ -n "$decode_dir" ]; then
     # Scan optimized qrcodes and concatenate data to a unique file
     counter=1; for file in $work_dir/pics/*
     do
-        zbar_output=$( (zbarimg --raw --oneshot -Sbinary -Sdisable -Sqr.enable "$file" >> $work_dir/restore) 2>&1 > /dev/null)
-        if [[ $zbar_output == *"not detected"* ]]; then echo "Error: no content found in the qrcode #$counter, check the image quality"; exit 1; fi
+        zbar_output=$( (zbarimg --raw --oneshot --nodbus -Sbinary -Sdisable -Sqr.enable "$file" >> $work_dir/restore) 2>&1 > /dev/null)
+        if [[ $zbar_output == *"not detected"* ]]; then echo "Error: no content found in the qrcode #$counter ($file), check the image quality"; zbar_error=1; fi
         counter=$((counter+1))
     done
+    if [ -n "$zbar_error" ]; then echo "Error: one or more qrcodes not detected, exiting"; exit 1; fi
     cp "$work_dir/restore" "$decode_output"
 
     # Add zip extension automatically
