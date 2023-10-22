@@ -161,7 +161,7 @@ if [ -n "$encode_source" ]; then
     fi
 
     # Calculate the checksum, it is included in the pdf for a future integrity check
-    checksum=$(shasum -a 256 $encode_source | cut -f 1 -d ' ')
+    checksum=$(sha256sum -b $encode_source | cut -f 1 -d ' ')
     echo "=> SHA256 signature: $checksum"
 
     echo "=> Encoding $encode_source to qrcodes"
@@ -224,7 +224,7 @@ elif [ -n "$decode_dir" ]; then
     fi
 
     echo -e "\n=> File rebuild from papiro: $decode_output"
-    echo -e "=> SHA256 signature: $(shasum -a 256 $decode_output | cut -f 1 -d ' ')"
+    echo -e "=> SHA256 signature: $(sha256sum -b $decode_output | cut -f 1 -d ' ')"
 
 else
 
