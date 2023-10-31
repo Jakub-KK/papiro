@@ -96,7 +96,7 @@ fi
 
 # ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### 
 #
-# ENCONDE
+# ENCODE
 # If invoked with the -c flag process the file to create the qrcodes-papiro pdf
 #
 # ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### 
@@ -118,7 +118,7 @@ if [ -n "$encode_source" ]; then
         
     fi
 
-    # Set the split chunk size according to the error correction, default is L(ow)
+    # Set the split chunk size for a qrcode v40 (177x177) according to the error correction, default is L(ow)
     case $error_correction_level in
     "L" | "")
         error_correction_level="L"
@@ -166,7 +166,7 @@ if [ -n "$encode_source" ]; then
 
     echo "=> Encoding $encode_source to qrcodes"
 
-    # Split the file in chunks of 1273 bytes. This is the max size for a qrcode v40 (177x177) with hight (H) error correction code level (ECC)
+    # Split the file in chunks according to desired error correction level
     # Check https://www.qrcode.com/en/about/version.html for more details
     split -b $split_chunk $work_file $work_file.split
 
@@ -181,7 +181,7 @@ if [ -n "$encode_source" ]; then
     # Get the qrcodes count
     total_files=`ls $work_file.split*.png | wc -l | sed "s/ *//g"`
 
-    # Add a label to every qrcode
+    # Add a comment metadata to every qrcode file (later will become label underneath the code)
     counter=1; for file in $work_file.split*.png; do convert -comment "$label_file\n$date_human    |    $counter of $total_files parts" $file $file; counter=$((counter+1)); done
     if [ -n "$debug" ]; then cp $work_dir/*.png $PWD/$debug_dir/; fi
 
