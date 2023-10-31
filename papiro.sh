@@ -4,6 +4,19 @@
 
 # Idea from https://www.grant-trebbin.com/2015/05/encode-and-decode-file-backed-up-as.html
 
+# Prerequisites:
+# - imagemagick (convert, montage)
+# - qrencode
+# - zbar-tools (zbarimg)
+# Installation (Debian):
+# - apt-get install imagemagick qrencode zbar-tools
+# Configuration:
+# - add the following to /etc/ImageMagick-$VERSION/policy.xml (where $VERSION is ImageMagick version):
+#     <policy domain="coder" rights="read | write" pattern="PDF" />
+#     <policy domain="coder" rights="read | write" pattern="gs" />
+# - modify memory limit (default 256MiB is too low for larger files, 2GiB is sufficient for at least 340KiB source file, 8GiB for 1MiB source file)
+#     <policy domain="resource" name="memory" value="2GiB"/>
+
 function show_help {      
     echo -e "Papiro encodes and decodes file(s) to/from QR Codes, to print and store them phisically."
     echo -e "You can encode a single file or a full directory, in this latter case the data are zipped before the encoding."
