@@ -180,9 +180,16 @@ if [ -n "$encode_source" ]; then
     counter=1; for file in $work_file.split*.png; do convert -comment "$label_file\n$date_human    |    $counter of $total_files parts" $file $file; counter=$((counter+1)); done
     if [ -n "$debug" ]; then cp $work_dir/*.png $PWD/$debug_dir/; fi
 
-    # Create a multipage pdf and optimize its size
+    # Create title
     title="\n\n$label_file | $date_human\nsha256: $checksum"
-    if [ -n "$encode_myself" ]; then title="$title\nScan the qrcodes and merge the content in a unique text file, rename it to papiro.sh, run it"; fi
+    if [ -n "$encode_myself" ]; then
+        subtitle="Scan/photograph the QR codes and merge the content in a unique text file, rename it to papiro.sh, run it"
+    else
+        subtitle="Scan/photograph the QR codes separately, put in a folder ordered and use papiro.sh to decode and create the original file"
+    fi
+    title="$title\n$subtitle"
+
+    # Create a multipage pdf and optimize its size
     montage -pointsize 20 -label '%c' $work_dir/*.png -title "$title" -geometry "1x1<" -tile 3x4 $pdf_file
     convert $pdf_file -border 40 -type bilevel -compress fax $pdf_file
 
