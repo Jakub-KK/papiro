@@ -171,7 +171,12 @@ if [ -n "$encode_source" ]; then
     split -b $split_chunk $work_file $work_file.split
 
     # Encode the files in a qrcode 177x177, hight correction mode
-    for file in $work_file.split*; do qrencode --8bit -v 40 -l $error_correction_level -o $file.png -r $file; done
+    # options: -s specifies module size (4 with 3x4 tiling nicely fills A4 page), -m is width of the margin (0, we add margins manually), -d is DPI (300 is good print resolution)
+    # generated QR code has 740x740 pixels, with 300dpi it results in 6.3x6.3cm image on the A4 page
+    for file in $work_file.split*; do
+        qrencode --8bit -s 4 -m 0 -d 300 -v 40 -l $error_correction_level -o $file.png -r $file
+        convert $file.png -bordercolor "#fff" -border 20x0 $file.png
+    done
 
     # Get the qrcodes count
     total_files=`ls $work_file.split*.png | wc -l | sed "s/ *//g"`
@@ -189,9 +194,9 @@ if [ -n "$encode_source" ]; then
     fi
     title="$title\n$subtitle"
 
-    # Create a multipage pdf and optimize its size
-    montage -pointsize 20 -label '%c' $work_dir/*.png -title "$title" -geometry "1x1<" -tile 3x4 $pdf_file
-    convert $pdf_file -border 40 -type bilevel -compress fax $pdf_file
+    # Create a multipage pdf with A4 pages, 300 DPI
+    montage -units PixelsPerInch -density 300 -pointsize 4 -label '%c' $work_dir/*.png -title "$title" -geometry "1x1<" -tile 3x4 $pdf_file
+    convert -units PixelsPerInch -density 300 $pdf_file -gravity center -extent 2480x3508 -type bilevel -compress fax $pdf_file # for ANSI Letter page use extent 2550x3300 (8x11")
 
     echo -e "\nYour Papiro is ready to print: $pdf_file"
 
